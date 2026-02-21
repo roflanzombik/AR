@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Arduino AR Assistant</title>
+    <!-- Библиотеки A-Frame и MindAR -->
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+    
+    <script>
+      // Скрипт переключения режимов
+      AFRAME.registerComponent('mode-switcher', {
+        init: function () {
+          const btn = document.querySelector("#ui-btn");
+          
+          // Элементы, которые мы будем менять
+          const labelPower = document.querySelector("#label-power");
+          const labelDigital = document.querySelector("#label-digital");
+          const bgPower = document.querySelector("#bg-power");
+          const bgDigital = document.querySelector("#bg-digital");
+          
+          let mode = 0; // 0 - Технический, 1 - Проектный
+          
+          btn.addEventListener('click', () => {
+            mode = 1 - mode;
+            
+            if (mode === 0) {
+              // РЕЖИМ 1: ТЕХНИЧЕСКИЙ
+              btn.innerText = "Mode: DATASHEET";
+              btn.style.background = "#222";
+              
+              labelPower.setAttribute("value", "3.3V / 5V");
+              bgPower.setAttribute("color", "black");
+              
+              labelDigital.setAttribute("value", "PWM (D3, D5)");
+              bgDigital.setAttribute("color", "black");
+              
+            } else {
+              // РЕЖИМ 2: ПРОЕКТНЫЙ (Твоя оптимизация)
+              btn.innerText = "Mode: PROJECT";
+              btn.style.background = "#0055ff";
+              
+              labelPower.setAttribute("value", "Sensor Power");
+              bgPower.setAttribute("color", "#ff0055"); // Красный фон
+              
+              labelDigital.setAttribute("value", "Servo Control");
+              bgDigital.setAttribute("color", "#00aa00"); // Зеленый фон
+            }
+          });
+        }
+      });
+    </script>
+
+    <style>
+      #ui-btn {
+        position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+        padding: 15px 30px; background: #222; color: white;
+        border: 2px solid white; border-radius: 12px; font-family: sans-serif; font-size: 16px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+
+  <body>
+    <button id="ui-btn">Mode: DATASHEET</button>
+
+    <!-- Сцена AR. Замени targets.mind на свой файл, если имя другое -->
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" mode-switcher>
+      
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <!-- ТАРГЕТ (Твоя картинка Arduino) -->
+      <a-entity mindar-image-target="targetIndex: 0">
+        
+        <!-- ГРУППА 1: ПИТАНИЕ (Нижний край платы) -->
+        <!-- position: X Y Z. Подбирай X и Y, чтобы попало на пины -->
+        <a-entity position="-0.2 -0.4 0">
+            <!-- Плашка -->
+            <a-plane id="bg-power" color="black" opacity="0.8" width="0.5" height="0.15"></a-plane>
+            <!-- Текст -->
+            <a-text id="label-power" value="3.3V / 5V" align="center" color="white" width="2" z-offset="0.1"></a-text>
+            <!-- Линия-указатель -->
+            <a-entity line="start: 0 0.08 0; end: 0 0.2 0; color: yellow"></a-entity>
+        </a-entity>
+
+        <!-- ГРУППА 2: ЦИФРОВЫЕ ПИНЫ (Верхний край платы) -->
+        <a-entity position="0.3 0.4 0">
+            <a-plane id="bg-digital" color="black" opacity="0.8" width="0.6" height="0.15"></a-plane>
+            <a-text id="label-digital" value="PWM (D3, D5)" align="center" color="white" width="2" z-offset="0.1"></a-text>
+            <a-entity line="start: 0 -0.08 0; end: 0 -0.2 0; color: cyan"></a-entity>
+        </a-entity>
+
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
