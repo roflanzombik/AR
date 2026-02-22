@@ -1,95 +1,123 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Arduino AR Assistant</title>
-    <!-- Локальные скрипты -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>Arduino AR Assistant PRO</title>
     <script src="aframe.min.js"></script>
     <script src="mindar-image-aframe.prod.js"></script>
     
+    <style>
+      body { margin: 0; overflow: hidden; font-family: sans-serif; }
+      #editor-panel {
+        position: absolute; top: 10px; left: 10px; right: 10px;
+        background: rgba(0,0,0,0.85); padding: 8px; border-radius: 8px;
+        display: flex; gap: 5px; z-index: 2000; border: 1px solid #444;
+      }
+      #editor-panel select, #editor-panel input {
+        background: #111; color: white; border: 1px solid #555; padding: 6px; border-radius: 4px; flex-grow: 1; font-size: 12px;
+      }
+      #editor-panel button {
+        background: #28a745; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold;
+      }
+      #ui-btn {
+        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+        padding: 12px 25px; background: #222; color: white;
+        border: 2px solid white; border-radius: 10px; font-weight: bold; z-index: 1000;
+      }
+    </style>
+
     <script>
+      // Две независимые базы имен
+      let projectNames = {"d13":"LED","d12":"-","d11":"MOSI","d10":"PWM","d9":"FAN","d8":"BTN1","d7":"BTN2","d6":"-","d5":"SRV","d4":"-","d3":"BUZZ","d2":"IRQ","d1":"TX","d0":"RX","a0":"SENS1","a1":"SENS2","a2":"POT","a3":"-","a4":"SDA","a5":"SCL"};
+      const baseNames = {"d13":"13","d12":"12","d11":"11","d10":"10","d9":"9","d8":"8","d7":"7","d6":"6","d5":"5","d4":"4","d3":"3","d2":"2","d1":"1","d0":"0","a0":"A0","a1":"A1","a2":"A2","a3":"A3","a4":"A4","a5":"A5"};
+
       AFRAME.registerComponent('pin-manager', {
         init: function () {
           const btn = document.querySelector("#ui-btn");
-          let mode = 0;
-          const projectConfig = {"d13":"LED","d12":"-","d11":"MOSI","d10":"PWM","d9":"FAN","d8":"BTN1","d7":"BTN2","d6":"-","d5":"SRV","d4":"-","d3":"BUZZ","d2":"IRQ","d1":"TX","d0":"RX","a0":"SENS1","a1":"SENS2","a2":"POT","a3":"-","a4":"SDA","a5":"SCL"};
-          const baseConfig = {"d13":"13","d12":"12","d11":"11","d10":"10","d9":"9","d8":"8","d7":"7","d6":"6","d5":"5","d4":"4","d3":"3","d2":"2","d1":"1","d0":"0","a0":"A0","a1":"A1","a2":"A2","a3":"A3","a4":"A4","a5":"A5"};
+          const applyBtn = document.querySelector("#apply-btn");
+          const pinSelect = document.querySelector("#pin-select");
+          const pinInput = document.querySelector("#pin-input");
+          let mode = 0; // 0 - Datasheet, 1 - My Project
+
+          const updateUI = () => {
+            const currentSet = (mode === 0) ? baseNames : projectNames;
+            for (const [id, val] of Object.entries(currentSet)) {
+              const el = document.querySelector(`#txt-${id}`);
+              if (el) { 
+                el.setAttribute("value", val);
+                el.setAttribute("color", mode === 0 ? "white" : "#00FF00");
+              }
+            }
+          };
+
+          applyBtn.addEventListener('click', () => {
+            projectNames[pinSelect.value] = pinInput.value;
+            if(mode === 1) updateUI(); // Обновляем текст только если мы в режиме проекта
+            pinInput.value = "";
+          });
 
           btn.addEventListener('click', () => {
             mode = 1 - mode;
-            btn.innerText = mode === 0 ? "Mode: DATASHEET" : "Mode: PROJECT";
-            btn.style.background = mode === 0 ? "#222" : "#28a745";
-            const config = mode === 0 ? baseConfig : projectConfig;
-            for (const [id, val] of Object.entries(config)) {
-              const el = document.querySelector(`#txt-${id}`);
-              const bg = document.querySelector(`#bg-${id}`);
-              if (el) { 
-                el.setAttribute("value", val); 
-                el.setAttribute("color", mode === 0 ? "white" : "#afff00"); 
-              }
-              if (bg) {
-                bg.setAttribute("color", mode === 0 ? "#111" : "#004d00");
-              }
-            }
+            btn.innerText = mode === 0 ? "Mode: DATASHEET" : "Mode: MY PROJECT";
+            btn.style.background = mode === 0 ? "#222" : "#0055ff";
+            updateUI();
           });
         }
       });
     </script>
-
-    <style>
-      #ui-btn {
-        position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-        padding: 15px 35px; background: #222; color: white;
-        border: 2px solid white; border-radius: 10px; font-family: sans-serif;
-        font-weight: bold; z-index: 1000; cursor: pointer;
-      }
-    </style>
   </head>
 
   <body>
+    <div id="editor-panel">
+      <select id="pin-select">
+        <option value="d13">D13</option><option value="d12">D12</option><option value="d11">D11</option>
+        <option value="d10">D10</option><option value="d9">D9</option><option value="d8">D8</option>
+        <option value="d7">D7</option><option value="d6">D6</option><option value="d5">D5</option>
+        <option value="d4">D4</option><option value="d3">D3</option><option value="d2">D2</option>
+        <option value="d1">D1</option><option value="d0">D0</option>
+        <option value="a0">A0</option><option value="a1">A1</option><option value="a2">A2</option>
+        <option value="a3">A3</option><option value="a4">A4</option><option value="a5">A5</option>
+      </select>
+      <input type="text" id="pin-input" placeholder="Project name">
+      <button id="apply-btn">OK</button>
+    </div>
+
     <button id="ui-btn">Mode: DATASHEET</button>
 
     <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" pin-manager>
-      
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
         
         <!-- ЦИФРОВЫЕ ПИНЫ (Справа) -->
-        <!-- X=0.48 (дальше от центра), Y=-0.14 (сильно ниже) -->
-        <a-entity position="0.48 -0.14 0.08">
-          <a-entity position="0 0.34 0">
-            <!-- Линия начинается у края разъема (-0.15) и идет к тексту (0) -->
-            <a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity>
-            <a-plane id="bg-d13" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane>
-            <a-text id="txt-d13" value="13" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text>
-          </a-entity>
+        <!-- X=0.35 (ровно на разъеме), Y=-0.32 (опустил еще ниже) -->
+        <a-entity position="0.39 -0.26 0.05">
+          <a-entity position="0 0.22 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d13" value="13" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.18 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d12" value="12" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.14 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d11" value="11" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.10 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d10" value="10" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.06 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d9" value="9" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.02 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d8" value="8" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
           
-          <a-entity position="0 0.29 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d12" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d12" value="12" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 0.24 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d11" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d11" value="11" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 0.19 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d10" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d10" value="10" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 0.14 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d9" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d9" value="9" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 0.09 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d8" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d8" value="8" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          
-          <a-entity position="0 0.02 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d7" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d7" value="7" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.03 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d6" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d6" value="6" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.08 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d5" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d5" value="5" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.13 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d4" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d4" value="4" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.18 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d3" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d3" value="3" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.23 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d2" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d2" value="2" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.28 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d1" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d1" value="1" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.33 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d0" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d0" value="0" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.03 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d7" value="7" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.07 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d6" value="6" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.11 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d5" value="5" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.15 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d4" value="4" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.19 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d3" value="3" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.23 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d2" value="2" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.27 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d1" value="1" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.31 0"><a-entity line="start: 0 0 0; end: 0.35 0 0; color: cyan"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="0.4 0 0"></a-plane><a-text id="txt-d0" value="0" position="0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
         </a-entity>
 
         <!-- АНАЛОГОВЫЕ ПИНЫ (Слева) -->
-        <!-- X=-0.48, Y=-0.32 (сильно ниже) -->
-        <a-entity position="-0.48 -0.32 0.08">
-          <a-entity position="0 0.05 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a0" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a0" value="A0" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 0.0 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a1" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a1" value="A1" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.05 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a2" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a2" value="A2" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.1 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a3" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a3" value="A3" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.15 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a4" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a4" value="A4" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
-          <a-entity position="0 -0.2 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a5" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a5" value="A5" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+        <!-- X=-0.35 (на разъеме), Y=-0.55 (опустил еще ниже) -->
+        <a-entity position="-0.38 -0.37 0.05">
+          <a-entity position="0 0.00 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a0" value="A0" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.04 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a1" value="A1" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.08 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a2" value="A2" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.12 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a3" value="A3" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.16 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a4" value="A4" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.20 0"><a-entity line="start: 0 0 0; end: -0.35 0 0; color: yellow"></a-entity><a-plane color="#111" width="0.14" height="0.03" opacity="0.7" position="-0.4 0 0"></a-plane><a-text id="txt-a5" value="A5" position="-0.4 0 0.01" align="center" width="0.8" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
         </a-entity>
 
       </a-entity>
