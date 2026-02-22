@@ -41,7 +41,7 @@
         position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
         padding: 15px 35px; background: #222; color: white;
         border: 2px solid white; border-radius: 10px; font-family: sans-serif;
-        font-weight: bold; z-index: 1000; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        font-weight: bold; z-index: 1000; cursor: pointer;
       }
     </style>
   </head>
@@ -55,37 +55,41 @@
 
       <a-entity mindar-image-target="targetIndex: 0">
         
-        <!-- ЦИФРОВЫЕ ПИНЫ (Справа) - Сместил Y на -0.08 и X на 0.32 -->
-        <a-entity position="0.32 -0.08 0.05">
+        <!-- ЦИФРОВЫЕ ПИНЫ (Справа) -->
+        <!-- X=0.48 (дальше от центра), Y=-0.14 (сильно ниже) -->
+        <a-entity position="0.48 -0.14 0.08">
           <a-entity position="0 0.34 0">
-            <a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity>
-            <a-plane id="bg-d13" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane>
-            <a-text id="txt-d13" value="13" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text>
+            <!-- Линия начинается у края разъема (-0.15) и идет к тексту (0) -->
+            <a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity>
+            <a-plane id="bg-d13" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane>
+            <a-text id="txt-d13" value="13" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text>
           </a-entity>
-          <a-entity position="0 0.29 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d12" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d12" value="12" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 0.24 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d11" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d11" value="11" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 0.19 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d10" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d10" value="10" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 0.14 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d9" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d9" value="9" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 0.09 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d8" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d8" value="8" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
           
-          <a-entity position="0 0.02 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d7" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d7" value="7" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.03 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d6" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d6" value="6" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.08 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d5" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d5" value="5" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.13 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d4" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d4" value="4" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.18 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d3" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d3" value="3" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.23 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d2" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d2" value="2" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.28 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d1" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d1" value="1" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.33 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d0" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d0" value="0" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.29 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d12" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d12" value="12" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.24 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d11" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d11" value="11" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.19 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d10" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d10" value="10" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.14 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d9" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d9" value="9" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.09 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d8" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d8" value="8" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          
+          <a-entity position="0 0.02 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d7" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d7" value="7" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.03 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d6" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d6" value="6" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.08 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d5" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d5" value="5" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.13 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d4" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d4" value="4" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.18 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d3" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d3" value="3" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.23 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d2" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d2" value="2" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.28 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d1" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d1" value="1" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.33 0"><a-entity line="start: -0.15 0 0; end: -0.05 0 0; color: cyan"></a-entity><a-plane id="bg-d0" color="#111" width="0.22" height="0.045" opacity="0.8" position="0.06 0 0"></a-plane><a-text id="txt-d0" value="0" align="center" width="2.5" position="0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
         </a-entity>
 
-        <!-- АНАЛОГОВЫЕ ПИНЫ (Слева) - Сместил Y на -0.2 и X на -0.32 -->
-        <a-entity position="-0.32 -0.28 0.05">
-          <a-entity position="0 0.05 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a0" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a0" value="A0" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 0.0 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a1" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a1" value="A1" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.05 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a2" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a2" value="A2" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.1 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a3" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a3" value="A3" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.15 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a4" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a4" value="A4" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
-          <a-entity position="0 -0.2 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a5" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a5" value="A5" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+        <!-- АНАЛОГОВЫЕ ПИНЫ (Слева) -->
+        <!-- X=-0.48, Y=-0.32 (сильно ниже) -->
+        <a-entity position="-0.48 -0.32 0.08">
+          <a-entity position="0 0.05 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a0" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a0" value="A0" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 0.0 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a1" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a1" value="A1" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.05 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a2" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a2" value="A2" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.1 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a3" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a3" value="A3" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.15 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a4" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a4" value="A4" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
+          <a-entity position="0 -0.2 0"><a-entity line="start: 0.15 0 0; end: 0.05 0 0; color: yellow"></a-entity><a-plane id="bg-a5" color="#111" width="0.22" height="0.045" opacity="0.8" position="-0.06 0 0"></a-plane><a-text id="txt-a5" value="A5" align="center" width="2.5" position="-0.06 0 0.01" font="./DejaVu-sdf.fnt" fontImage="./DejaVu-sdf.png"></a-text></a-entity>
         </a-entity>
 
       </a-entity>
