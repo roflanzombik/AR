@@ -2,78 +2,33 @@
 <html>
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Arduino AR Pinout</title>
-    <!-- Библиотеки A-Frame и MindAR -->
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.0/dist/mindar-image-aframe.prod.js"></script>
+    <title>Arduino AR Assistant</title>
+    <!-- Локальные скрипты -->
+    <script src="aframe.min.js"></script>
+    <script src="mindar-image-aframe.prod.js"></script>
     
     <script>
-      AFRAME.registerComponent('pin-switcher', {
+      AFRAME.registerComponent('pin-manager', {
         init: function () {
           const btn = document.querySelector("#ui-btn");
-          let mode = 0; // 0 - Технический, 1 - Проектный
-          
-          // Настраиваем, как будут называться пины в "Проектном" режиме
-          // Если пин не используется, можно оставить пустую строку "" или написать "N/C"
-          const projectConfig = {
-            "txt-d13": "LED",
-            "txt-d12": "",
-            "txt-d11": "SPI MOSI",
-            "txt-d10": "Motor A",
-            "txt-d9": "Motor B",
-            "txt-d8": "",
-            "txt-d7": "",
-            "txt-d6": "",
-            "txt-d5": "Servo",
-            "txt-d4": "",
-            "txt-d3": "Buzzer",
-            "txt-d2": "Interrupt",
-            "txt-d1": "TX",
-            "txt-d0": "RX",
-            
-            "txt-a0": "Light Sensor",
-            "txt-a1": "Temp Sensor",
-            "txt-a2": "",
-            "txt-a3": "",
-            "txt-a4": "I2C SDA",
-            "txt-a5": "I2C SCL"
-          };
-
-          // Базовые названия (Технические)
-          const baseConfig = {
-            "txt-d13": "13", "txt-d12": "12", "txt-d11": "11", "txt-d10": "10", 
-            "txt-d9": "9", "txt-d8": "8", "txt-d7": "7", "txt-d6": "6", 
-            "txt-d5": "5", "txt-d4": "4", "txt-d3": "3", "txt-d2": "2", 
-            "txt-d1": "1", "txt-d0": "0",
-            "txt-a0": "A0", "txt-a1": "A1", "txt-a2": "A2", "txt-a3": "A3", 
-            "txt-a4": "A4", "txt-a5": "A5"
-          };
+          let mode = 0;
+          const projectConfig = {"d13":"LED","d12":"-","d11":"MOSI","d10":"PWM","d9":"FAN","d8":"BTN1","d7":"BTN2","d6":"-","d5":"SRV","d4":"-","d3":"BUZZ","d2":"IRQ","d1":"TX","d0":"RX","a0":"SENS1","a1":"SENS2","a2":"POT","a3":"-","a4":"SDA","a5":"SCL"};
+          const baseConfig = {"d13":"13","d12":"12","d11":"11","d10":"10","d9":"9","d8":"8","d7":"7","d6":"6","d5":"5","d4":"4","d3":"3","d2":"2","d1":"1","d0":"0","a0":"A0","a1":"A1","a2":"A2","a3":"A3","a4":"A4","a5":"A5"};
 
           btn.addEventListener('click', () => {
             mode = 1 - mode;
-            
-            if (mode === 0) {
-              btn.innerText = "Mode: BASE PINOUT";
-              btn.style.background = "#222";
-              // Возвращаем базовые имена
-              for (const [id, value] of Object.entries(baseConfig)) {
-                  let el = document.getElementById(id);
-                  if(el) {
-                      el.setAttribute("value", value);
-                      el.setAttribute("color", "white");
-                  }
+            btn.innerText = mode === 0 ? "Mode: DATASHEET" : "Mode: PROJECT";
+            btn.style.background = mode === 0 ? "#222" : "#28a745";
+            const config = mode === 0 ? baseConfig : projectConfig;
+            for (const [id, val] of Object.entries(config)) {
+              const el = document.querySelector(`#txt-${id}`);
+              const bg = document.querySelector(`#bg-${id}`);
+              if (el) { 
+                el.setAttribute("value", val); 
+                el.setAttribute("color", mode === 0 ? "white" : "#afff00"); 
               }
-            } else {
-              btn.innerText = "Mode: MY PROJECT";
-              btn.style.background = "#0055ff";
-              // Ставим проектные имена
-              for (const [id, value] of Object.entries(projectConfig)) {
-                  let el = document.getElementById(id);
-                  if(el) {
-                      el.setAttribute("value", value);
-                      // Выделяем активные пины зеленым, пустые - серым
-                      el.setAttribute("color", value !== "" ? "#00FF00" : "#555555"); 
-                  }
+              if (bg) {
+                bg.setAttribute("color", mode === 0 ? "#111" : "#004d00");
               }
             }
           });
@@ -84,130 +39,53 @@
     <style>
       #ui-btn {
         position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
-        padding: 12px 20px; background: #222; color: white;
-        border: 2px solid white; border-radius: 8px; font-family: sans-serif; font-size: 14px;
-        z-index: 1000;
+        padding: 15px 35px; background: #222; color: white;
+        border: 2px solid white; border-radius: 10px; font-family: sans-serif;
+        font-weight: bold; z-index: 1000; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       }
     </style>
   </head>
 
   <body>
-    <button id="ui-btn">Mode: BASE PINOUT</button>
+    <button id="ui-btn">Mode: DATASHEET</button>
 
-    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" pin-switcher>
+    <a-scene mindar-image="imageTargetSrc: ./targets.mind;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false" pin-manager>
       
       <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
 
       <a-entity mindar-image-target="targetIndex: 0">
         
-        <!-- ЦИФРОВЫЕ ПИНЫ (Справа). X=0.45 (у правого края), Y меняется с шагом 0.045 -->
-        <a-entity position="0.45 0 0">
-          <!-- 13 -->
-          <a-entity position="0 0.35 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d13" value="13" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
+        <!-- ЦИФРОВЫЕ ПИНЫ (Справа) - Сместил Y на -0.08 и X на 0.32 -->
+        <a-entity position="0.32 -0.08 0.05">
+          <a-entity position="0 0.34 0">
+            <a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity>
+            <a-plane id="bg-d13" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane>
+            <a-text id="txt-d13" value="13" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text>
           </a-entity>
-          <!-- 12 -->
-          <a-entity position="0 0.305 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d12" value="12" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- 11 -->
-          <a-entity position="0 0.26 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d11" value="11" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- 10 -->
-          <a-entity position="0 0.215 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d10" value="10" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- 9 -->
-          <a-entity position="0 0.17 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d9" value="9" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- 8 -->
-          <a-entity position="0 0.125 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d8" value="8" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- Разрыв (зазор на плате между 7 и 8 пином) -->
-          <!-- 7 -->
-          <a-entity position="0 0.05 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d7" value="7" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-          <!-- 6 -->
-          <a-entity position="0 0.005 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d6" value="6" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 5 -->
-          <a-entity position="0 -0.04 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d5" value="5" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 4 -->
-          <a-entity position="0 -0.085 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d4" value="4" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 3 -->
-          <a-entity position="0 -0.13 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d3" value="3" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 2 -->
-          <a-entity position="0 -0.175 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d2" value="2" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 1 -->
-          <a-entity position="0 -0.22 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d1" value="1" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
-           <!-- 0 -->
-          <a-entity position="0 -0.265 0">
-            <a-entity line="start: 0 0 0; end: 0.1 0 0; color: cyan"></a-entity>
-            <a-text id="txt-d0" value="0" position="0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="left"></a-text>
-          </a-entity>
+          <a-entity position="0 0.29 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d12" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d12" value="12" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.24 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d11" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d11" value="11" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.19 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d10" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d10" value="10" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.14 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d9" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d9" value="9" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.09 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d8" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d8" value="8" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          
+          <a-entity position="0 0.02 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d7" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d7" value="7" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.03 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d6" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d6" value="6" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.08 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d5" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d5" value="5" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.13 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d4" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d4" value="4" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.18 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d3" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d3" value="3" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.23 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d2" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d2" value="2" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.28 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d1" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d1" value="1" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.33 0"><a-entity line="start: -0.08 0 0; end: 0 0 0; color: cyan"></a-entity><a-plane id="bg-d0" color="#111" width="0.2" height="0.045" opacity="0.9" position="0.1 0 0"></a-plane><a-text id="txt-d0" value="0" align="center" width="2" position="0.1 0 0.01" font="dejavu"></a-text></a-entity>
         </a-entity>
 
-
-        <!-- АНАЛОГОВЫЕ ПИНЫ (Слева внизу). X=-0.45 -->
-        <a-entity position="-0.45 -0.1 0">
-          <!-- A0 -->
-          <a-entity position="0 0.05 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a0" value="A0" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
-          <!-- A1 -->
-          <a-entity position="0 0.005 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a1" value="A1" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
-          <!-- A2 -->
-          <a-entity position="0 -0.04 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a2" value="A2" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
-          <!-- A3 -->
-          <a-entity position="0 -0.085 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a3" value="A3" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
-          <!-- A4 -->
-          <a-entity position="0 -0.13 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a4" value="A4" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
-          <!-- A5 -->
-          <a-entity position="0 -0.175 0">
-            <a-entity line="start: 0 0 0; end: -0.1 0 0; color: yellow"></a-entity>
-            <a-text id="txt-a5" value="A5" position="-0.15 0 0" rotation="-90 0 0" color="white" width="1.5" align="right"></a-text>
-          </a-entity>
+        <!-- АНАЛОГОВЫЕ ПИНЫ (Слева) - Сместил Y на -0.2 и X на -0.32 -->
+        <a-entity position="-0.32 -0.28 0.05">
+          <a-entity position="0 0.05 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a0" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a0" value="A0" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 0.0 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a1" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a1" value="A1" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.05 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a2" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a2" value="A2" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.1 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a3" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a3" value="A3" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.15 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a4" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a4" value="A4" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
+          <a-entity position="0 -0.2 0"><a-entity line="start: 0.08 0 0; end: 0 0 0; color: yellow"></a-entity><a-plane id="bg-a5" color="#111" width="0.2" height="0.045" opacity="0.9" position="-0.1 0 0"></a-plane><a-text id="txt-a5" value="A5" align="center" width="2" position="-0.1 0 0.01" font="dejavu"></a-text></a-entity>
         </a-entity>
 
       </a-entity>
